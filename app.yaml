@@ -1,0 +1,10 @@
+runtime: python39  # or your Python version
+
+entrypoint: gunicorn -b :$PORT myproject.wsgi:application
+
+handlers:
+- url: /static
+  static_dir: static/
+
+- url: /.*
+  script: auto

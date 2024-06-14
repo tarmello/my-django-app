@@ -1,0 +1,19 @@
+include "devtools/blueprint/bluze/public/bluze.ncl";
+include bytes "third_party/py/websocket/bluze.textproto" as textproto;
+
+// See go/bluze/guide before editing. To check the generated final blueprint run
+// rncl third_party/py/websocket/third_party.py.websocket.blueprint printproto blueprint_file
+
+blueprint_file = ::bluze::BlueprintFile(
+  textproto,
+
+  project_name = "third_party.py.websocket",
+  teams_product_id = 7805226519,
+  tech_lead = ["tewalds"],
+  dev_mailing_list = "deepmind-alphastar-eng@google.com",
+  mdb_groups = ["third-party-tap-forge"],
+  buganizer_component_ids = [385908],
+  metadata_path = "//depot/google3/third_party/py/websocket/METADATA",
+
+// Customize your blueprint here: go/blueprint/howto-write.
+);

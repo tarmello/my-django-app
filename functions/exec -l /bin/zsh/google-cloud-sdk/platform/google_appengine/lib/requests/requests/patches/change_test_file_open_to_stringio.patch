@@ -1,0 +1,37 @@
+--- a/tests/test_requests.py
++++ b/tests/test_requests.py
+@@ -3,6 +3,7 @@
+ """Tests for Requests."""
+ 
+ from __future__ import division
++import io
+ import json
+ import os
+ import pickle
+@@ -718,7 +716,7 @@ class TestRequests:
+         post1 = requests.post(url, data={'some': 'data'})
+         assert post1.status_code == 200
+ 
+-        with open('requirements-dev.txt') as f:
++        with io.StringIO('dummy_string') as f:
+             post2 = requests.post(url, files={'some': f})
+         assert post2.status_code == 200
+ 
+@@ -786,7 +784,7 @@ class TestRequests:
+         post1 = requests.post(url, data={'some': 'data'})
+         assert post1.status_code == 200
+ 
+-        with open('requirements-dev.txt') as f:
++        with io.StringIO('dummy_string') as f:
+             post2 = requests.post(url, data={'some': 'data'}, files={'some': f})
+         assert post2.status_code == 200
+ 
+@@ -823,7 +821,7 @@ class TestRequests:
+ 
+     def test_conflicting_post_params(self, httpbin):
+         url = httpbin('post')
+-        with open('requirements-dev.txt') as f:
++        with io.StringIO('dummy_string') as f:
+             with pytest.raises(ValueError):
+                 requests.post(url, data='[{"some": "data"}]', files={'some': f})
+             with pytest.raises(ValueError):

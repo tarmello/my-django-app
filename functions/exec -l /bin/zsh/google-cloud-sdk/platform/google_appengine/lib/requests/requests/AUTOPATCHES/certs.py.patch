@@ -1,0 +1,22 @@
+@@ This module returns the preferred default CA certificate bundle. There is
+ only one — the one from the certifi package.
+ 
+ If you are packaging Requests, e.g., for a Linux distribution or a managed
+-environment, you can change the definition of where() to return a separately
+-packaged CA bundle.
++environment, you can change the definition of as_str() and where() to return
++a separately packaged CA bundle.
+ """
+-from certifi import where
++from certifi import as_str, where
+ 
++<<<<<<< /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/checkout/google3/third_party/py/requests/certs.py
+ if __name__ == "__main__":
+     print(where())
++||||||| /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/baseline/google3/third_party/py/requests/certs.py
++if __name__ == '__main__':
++    print(where())
++=======
++if __name__ == '__main__':
++    print(as_str(), where())
++>>>>>>> /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/destination/google3/third_party/py/requests/certs.py

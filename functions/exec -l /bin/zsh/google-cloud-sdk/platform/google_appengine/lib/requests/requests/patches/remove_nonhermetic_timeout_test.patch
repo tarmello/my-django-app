@@ -1,0 +1,34 @@
+--- a/tests/test_requests.py
++++ b/tests/test_requests.py
+@@ -2238,31 +2236,6 @@ class TestTimeout:
+         except ReadTimeout:
+             pass
+ 
+-    @pytest.mark.parametrize(
+-        'timeout', (
+-            (0.1, None),
+-            Urllib3Timeout(connect=0.1, read=None)
+-        ))
+-    def test_connect_timeout(self, timeout):
+-        try:
+-            requests.get(TARPIT, timeout=timeout)
+-            pytest.fail('The connect() request should time out.')
+-        except ConnectTimeout as e:
+-            assert isinstance(e, ConnectionError)
+-            assert isinstance(e, Timeout)
+-
+-    @pytest.mark.parametrize(
+-        'timeout', (
+-            (0.1, 0.1),
+-            Urllib3Timeout(connect=0.1, read=0.1)
+-        ))
+-    def test_total_timeout_connect(self, timeout):
+-        try:
+-            requests.get(TARPIT, timeout=timeout)
+-            pytest.fail('The connect() request should time out.')
+-        except ConnectTimeout:
+-            pass
+-
+     def test_encoded_methods(self, httpbin):
+         """See: https://github.com/psf/requests/issues/2316"""
+         r = requests.request(b'GET', httpbin('get'))

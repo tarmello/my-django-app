@@ -1,0 +1,9 @@
+@@ from requests.utils import (
+     urldefragauth,
+ )
+ 
+-from .compat import StringIO, cStringIO
++from requests.tests.compat import StringIO, cStringIO
+ 
+ 
+ class TestSuperLen:

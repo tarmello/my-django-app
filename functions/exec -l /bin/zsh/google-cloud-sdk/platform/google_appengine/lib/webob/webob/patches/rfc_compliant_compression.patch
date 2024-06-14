@@ -1,0 +1,76 @@
+From cbaa5fa864c0e8f15ba079124a4c42565601200c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tobias=20K=C3=B6lling?= <tobi@die70.de>
+Date: Wed, 9 Dec 2020 12:25:41 +0100
+Subject: [PATCH] deflate'd response: use RFC compliant decompression by
+ default
+
+[RFC7230](https://tools.ietf.org/html/rfc7230#section-4.2.2) specifies
+that
+
+>   The "deflate" coding is a "zlib" data format [RFC1950](https://tools.ietf.org/html/rfc1950) containing a
+>   "deflate" compressed data stream [RFC1951](https://tools.ietf.org/html/rfc1951) that uses a combination of
+>   the Lempel-Ziv (LZ77) compression algorithm and Huffman coding.
+
+but also
+
+>       Note: Some non-conformant implementations send the "deflate"
+>       compressed data without the zlib wrapper.
+
+Thus deflate coded data should be expected to be received within a
+"zlib" container, however if no container is present, the data shouldn't
+be rejected.
+
+This patch tries to decode that data using RFC7230 conformant decoding
+and falls back to unwrapped decoding only if the previous attempt didn't
+work.
+---
+ src/webob/response.py  | 11 +++++++++--
+ tests/test_response.py | 13 +++++++++++++
+ 2 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/src/webob/response.py b/src/webob/response.py
+index e02de87f..51d6c894 100644
+--- a/src/webob/response.py
++++ b/src/webob/response.py
+@@ -1322,8 +1322,15 @@ def decode_content(self):
+             self.content_encoding = None
+             gzip_f.close()
+         else:
+-            # Weird feature: http://bugs.python.org/issue5784
+-            self.body = zlib.decompress(self.body, -15)
++            try:
++                # RFC7230 section 4.2.2 specifies that the body should be wrapped
++                # inside a ZLIB (RFC1950) container ...
++                self.body = zlib.decompress(self.body)
++            except zlib.error:
++                # ... but there are nonconformant implementations around which send
++                # the data without the ZLIB container, so we use maximum window size
++                # decompression without header check (the - sign)
++                self.body = zlib.decompress(self.body, -15)
+             self.content_encoding = None
+ 
+     def md5_etag(self, body=None, set_content_md5=False):
+diff --git a/tests/test_response.py b/tests/test_response.py
+index 7f76bbe3..ed2b7f19 100644
+--- a/tests/test_response.py
++++ b/tests/test_response.py
+@@ -425,6 +425,19 @@ def test_decode_content_with_deflate():
+     assert res.content_encoding is None
+ 
+ 
++def test_decode_content_with_deflate_and_zlib_header():
++    res = Response()
++    body = b"Hey Hey Hey"
++    # don't chop off the zlib container
++    # https://tools.ietf.org/html/rfc7230#section-4.2.2 says
++    # that chopping it exists but is non-conformant
++    res.body = zlib.compress(body)
++    res.content_encoding = "deflate"
++    res.decode_content()
++    assert res.body == body
++    assert res.content_encoding is None
++
++
+ def test_content_length():
+     r0 = Response("x" * 10, content_length=10)
+ 

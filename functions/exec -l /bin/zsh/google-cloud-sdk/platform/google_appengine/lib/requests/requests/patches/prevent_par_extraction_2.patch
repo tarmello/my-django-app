@@ -1,0 +1,82 @@
+--- a/adapters.py
++++ b/adapters.py
+@@ -31,7 +31,7 @@ from urllib3.exceptions import LocationV
+ 
+ from .models import Response
+ from .compat import urlparse, basestring
+-from .utils import (DEFAULT_CA_BUNDLE_PATH, extract_zipped_paths,
++from .utils import (DEFAULT_CA_BUNDLE, extract_zipped_paths,
+                     get_encoding_from_headers, prepend_scheme_if_needed,
+                     get_auth_from_url, urldefragauth, select_proxy)
+ from .structures import CaseInsensitiveDict
+@@ -214,26 +214,25 @@ class HTTPAdapter(BaseAdapter):
+         :param cert: The SSL certificate to verify.
+         """
+         if url.lower().startswith('https') and verify:
+-
+-            cert_loc = None
+-
+-            # Allow self-specified cert location.
+-            if verify is not True:
+-                cert_loc = verify
+-
+-            if not cert_loc:
+-                cert_loc = extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)
+-
+-            if not cert_loc or not os.path.exists(cert_loc):
+-                raise IOError("Could not find a suitable TLS CA certificate bundle, "
+-                              "invalid path: {}".format(cert_loc))
+-
+             conn.cert_reqs = 'CERT_REQUIRED'
+-
+-            if not os.path.isdir(cert_loc):
+-                conn.ca_certs = cert_loc
++            if verify is True:
++                # urllib3 connections don't usually have ca_cert_data;
++                # we modify google3 in cl/514498083. Let's make certain.
++                assert hasattr(conn, 'ca_cert_data')
++                conn.ca_cert_data = DEFAULT_CA_BUNDLE
+             else:
+-                conn.ca_cert_dir = cert_loc
++                # `verify` is a path to a CA bundle to use.
++                # (It can't be None or False, because we checked `verify` for
++                # truthiness in the outer `if`.)
++                cert_loc = verify
++                if not cert_loc or not os.path.exists(cert_loc):
++                    raise IOError(
++                            "Could not find a suitable TLS CA certificate "
++                            "bundle, invalid path: {}".format(cert_loc))
++                if not os.path.isdir(cert_loc):
++                    conn.ca_certs = cert_loc
++                else:
++                    conn.ca_cert_dir = cert_loc
+         else:
+             conn.cert_reqs = 'CERT_NONE'
+             conn.ca_certs = None
+--- a/certs.py
++++ b/certs.py
+@@ -9,10 +9,10 @@ This module returns the preferred defaul
+ only one — the one from the certifi package.
+ 
+ If you are packaging Requests, e.g., for a Linux distribution or a managed
+-environment, you can change the definition of where() to return a separately
+-packaged CA bundle.
++environment, you can change the definition of as_str() and where() to return
++a separately packaged CA bundle.
+ """
+-from certifi import where
++from certifi import as_str, where
+ 
+ if __name__ == '__main__':
+-    print(where())
++    print(as_str(), where())
+--- a/utils.py
++++ b/utils.py
+@@ -46,6 +46,7 @@ class LazyCertsWhere(os.PathLike):
+         return certs.where()
+ 
+ DEFAULT_CA_BUNDLE_PATH = LazyCertsWhere()
++DEFAULT_CA_BUNDLE = certs.as_str()
+ 
+ DEFAULT_PORTS = {'http': 80, 'https': 443}
+ 

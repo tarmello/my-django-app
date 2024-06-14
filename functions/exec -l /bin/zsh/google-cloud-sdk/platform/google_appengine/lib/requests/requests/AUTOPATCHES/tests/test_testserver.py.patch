@@ -1,0 +1,13 @@
+@@ import pytest
+ from tests.testserver.server import Server
+ 
+ import requests
++<<<<<<< /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/checkout/google3/third_party/py/requests/tests/test_testserver.py
++||||||| /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/baseline/google3/third_party/py/requests/tests/test_testserver.py
++from tests.testserver.server import Server
++=======
++from requests.tests.testserver.server import Server
++>>>>>>> /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/destination/google3/third_party/py/requests/tests/test_testserver.py
+ 
+ 
+ class TestTestServer:

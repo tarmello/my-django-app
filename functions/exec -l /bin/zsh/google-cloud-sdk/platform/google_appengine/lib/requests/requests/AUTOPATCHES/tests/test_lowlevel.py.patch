@@ -1,0 +1,19 @@
+@@ import pytest
+ from tests.testserver.server import Server, consume_socket_content
+ 
+ import requests
++<<<<<<< /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/checkout/google3/third_party/py/requests/tests/test_lowlevel.py
+ from requests.compat import JSONDecodeError
++||||||| /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/baseline/google3/third_party/py/requests/tests/test_lowlevel.py
+ 
+-from .utils import override_environ
++from tests.testserver.server import Server, consume_socket_content
++=======
++
++from requests.tests.testserver.server import Server, consume_socket_content
++>>>>>>> /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/destination/google3/third_party/py/requests/tests/test_lowlevel.py
++
++from requests.tests.utils import override_environ
+ 
+ 
+ def echo_response_handler(sock):

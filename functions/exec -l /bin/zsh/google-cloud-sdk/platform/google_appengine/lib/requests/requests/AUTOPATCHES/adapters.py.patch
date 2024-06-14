@@ -1,0 +1,77 @@
+@@ from .exceptions import (
+     SSLError,
+ )
+ from .models import Response
++<<<<<<< /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/checkout/google3/third_party/py/requests/adapters.py
++||||||| /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/baseline/google3/third_party/py/requests/adapters.py
++from .compat import urlparse, basestring
++from .utils import (DEFAULT_CA_BUNDLE_PATH, extract_zipped_paths,
++                    get_encoding_from_headers, prepend_scheme_if_needed,
++                    get_auth_from_url, urldefragauth, select_proxy)
++=======
++from .compat import urlparse, basestring
++from .utils import (DEFAULT_CA_BUNDLE, extract_zipped_paths,
++                    get_encoding_from_headers, prepend_scheme_if_needed,
++                    get_auth_from_url, urldefragauth, select_proxy)
++>>>>>>> /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/destination/google3/third_party/py/requests/adapters.py
+ from .structures import CaseInsensitiveDict
+ from .utils import (
+     DEFAULT_CA_BUNDLE_PATH,
+@@ class HTTPAdapter(BaseAdapter):
+             to a CA bundle to use
+         :param cert: The SSL certificate to verify.
+         """
++<<<<<<< /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/checkout/google3/third_party/py/requests/adapters.py
+         if url.lower().startswith("https") and verify:
+ 
+             cert_loc = None
+@@ class HTTPAdapter(BaseAdapter):
+ 
+             if not os.path.isdir(cert_loc):
+                 conn.ca_certs = cert_loc
++||||||| /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/baseline/google3/third_party/py/requests/adapters.py
++        if url.lower().startswith('https') and verify:
++
++            cert_loc = None
++
++            # Allow self-specified cert location.
++            if verify is not True:
++                cert_loc = verify
++
++            if not cert_loc:
++                cert_loc = extract_zipped_paths(DEFAULT_CA_BUNDLE_PATH)
++
++            if not cert_loc or not os.path.exists(cert_loc):
++                raise IOError("Could not find a suitable TLS CA certificate bundle, "
++                              "invalid path: {}".format(cert_loc))
++
++            conn.cert_reqs = 'CERT_REQUIRED'
++
++            if not os.path.isdir(cert_loc):
++                conn.ca_certs = cert_loc
++=======
++        if url.lower().startswith('https') and verify:
++            conn.cert_reqs = 'CERT_REQUIRED'
++            if verify is True:
++                # Only the Google-internal version of urllib3 has ca_cert_data.
++                # Let's make certain.
++                assert hasattr(conn, 'ca_cert_data')
++                conn.ca_cert_data = DEFAULT_CA_BUNDLE
++>>>>>>> /usr/local/google/home/byoshimi/copybara/temp/workdir15795651501202885381/destination/google3/third_party/py/requests/adapters.py
+             else:
+-                conn.ca_cert_dir = cert_loc
++                # `verify` is a path to a CA bundle to use.
++                # (It can't be None or False, because we checked `verify` for
++                # truthiness in the outer `if`.)
++                cert_loc = verify
++                if not cert_loc or not os.path.exists(cert_loc):
++                    raise IOError(
++                            "Could not find a suitable TLS CA certificate "
++                            "bundle, invalid path: {}".format(cert_loc))
++                if not os.path.isdir(cert_loc):
++                    conn.ca_certs = cert_loc
++                else:
++                    conn.ca_cert_dir = cert_loc
+         else:
+             conn.cert_reqs = "CERT_NONE"
+             conn.ca_certs = None

@@ -1,0 +1,56 @@
+--- a/tests/test_lowlevel.py
++++ b/tests/test_lowlevel.py
+@@ -4,9 +4,9 @@ import pytest
+ import threading
+ import requests
+ 
+-from tests.testserver.server import Server, consume_socket_content
++from requests.tests.testserver.server import Server, consume_socket_content
+ 
+-from .utils import override_environ
++from requests.tests.utils import override_environ
+ 
+ 
+ def echo_response_handler(sock):
+--- a/tests/test_requests.py
++++ b/tests/test_requests.py
+@@ -32,13 +33,10 @@ from requests.models import urlencode
+ from requests.hooks import default_hooks
+ from requests.compat import MutableMapping
+ 
+-from .compat import StringIO, u
+-from .utils import override_environ
+-from urllib3.util import Timeout as Urllib3Timeout
+-
+-# Requests to this URL should always fail with a connection timeout (nothing
+-# listening on that port)
+-TARPIT = 'http://10.255.255.1'
++from requests.tests.compat import StringIO, u
++from requests.tests.utils import override_environ
++import urllib3
++Urllib3Timeout = urllib3.util.Timeout
+ 
+ # This is to avoid waiting the timeout of using TARPIT
+ INVALID_PROXY='http://localhost:1'
+--- a/tests/test_testserver.py
++++ b/tests/test_testserver.py
+@@ -6,7 +6,7 @@ import time
+ 
+ import pytest
+ import requests
+-from tests.testserver.server import Server
++from requests.tests.testserver.server import Server
+ 
+ 
+ class TestTestServer:
+--- a/tests/test_utils.py
++++ b/tests/test_utils.py
+@@ -25,7 +25,7 @@ from requests.utils import (
+     urldefragauth, add_dict_to_cookiejar, set_environ)
+ from requests._internal_utils import unicode_is_ascii
+ 
+-from .compat import StringIO, cStringIO
++from requests.tests.compat import StringIO, cStringIO
+ 
+ 
+ class TestSuperLen:

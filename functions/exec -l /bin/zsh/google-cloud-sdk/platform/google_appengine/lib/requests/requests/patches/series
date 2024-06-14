@@ -1,0 +1,16 @@
+# Ignore pytype build errors due to dynamic module attributes in packages.py:
+# go/pytype-faq#im-dynamically-populating-a-class-module-using-setattr-or-by-modifying-locals-globals-now-pytype-complains-about-missing-attributes-or-module-members-how-do-i-fix-this
+silence_pytype_module_attr.patch
+
+# Apply Google-specific fixes to tests.
+fix_test_imports.patch
+remove_nonhermetic_timeout_test.patch
+change_test_file_open_to_stringio.patch
+
+# Prevents PAR extraction due to definition of DEFAULT_CA_BUNDLE_PATH as a
+# global based on certify.where(), which returns a filename.
+prevent_par_extraction.patch
+
+# Adds DEFAULT_CA_BUNDLE, which contains the certs directly, avoiding
+# the need to use DEFAULT_CA_BUNDLE_PATH at all.
+prevent_par_extraction_2.patch

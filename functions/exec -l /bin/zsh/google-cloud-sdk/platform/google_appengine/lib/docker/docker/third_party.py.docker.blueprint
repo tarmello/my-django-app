@@ -1,0 +1,19 @@
+include "devtools/blueprint/bluze/public/bluze.ncl";
+include bytes "third_party/py/docker/bluze.textproto" as textproto;
+
+// See go/bluze/guide before editing. To check the generated final blueprint run
+// rncl third_party/py/docker/third_party.py.docker.blueprint printproto blueprint_file
+
+blueprint_file = ::bluze::BlueprintFile(
+  textproto,
+
+  project_name = "third_party.py.docker",
+  teams_product_id = 7805226519,
+  tech_lead = ["tomward"],
+  dev_mailing_list = "deepmind-worlds-team@google.com",
+  mdb_groups = ["third-party-tap-forge"],
+  buganizer_component_ids = [323817],
+  metadata_path = "//depot/google3/third_party/py/docker/METADATA",
+
+// Customize your blueprint here: go/blueprint/howto-write.
+);

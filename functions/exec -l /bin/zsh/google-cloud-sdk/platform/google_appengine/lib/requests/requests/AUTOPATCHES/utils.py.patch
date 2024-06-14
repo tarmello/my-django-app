@@ -1,0 +1,23 @@
+@@ from .structures import CaseInsensitiveDict
+ 
+ NETRC_FILES = (".netrc", "_netrc")
+ 
+-DEFAULT_CA_BUNDLE_PATH = certs.where()
++
++class LazyCertsWhere(os.PathLike):
++    """Wrapper around certs.where() to prevent PAR extraction on import."""
++
++    def __init__(self, path_override=None):
++        self._path_override = path_override  # For tests.
++
++    def __fspath__(self):
++        if self._path_override:
++            return self._path_override
++        else:
++            return certs.where()
++
++DEFAULT_CA_BUNDLE_PATH = LazyCertsWhere()
++DEFAULT_CA_BUNDLE = certs.as_str()
+ 
+ DEFAULT_PORTS = {"http": 80, "https": 443}
+ 
